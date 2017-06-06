@@ -32,7 +32,7 @@ class InstaluraMobile extends Component {
                 <Text>{item.usuario}</Text>
               </View>
               <Image style={{width: width, height: width}}
-                  source={require('./resources/img/instagram1.jpg')} />
+                  source={require('../resources/img/instagram1.jpg')} />
             </View>
           )}
       />
