@@ -22,9 +22,48 @@ export default class Post extends Component {
         : require('../../resources/img/s2.png')
   }
 
+  exibeLikes(likers) {
+    if(likers.length <= 0)
+      return;
+
+    return (
+      <Text style={styles.likes}>
+        {likers.length} {likers.length > 1 ? 'curtidas' : 'curtida'}
+      </Text>
+    );
+  }
+
+  exibeLegenda(foto) {
+    if(foto.comentario === "")
+      return;
+
+    return (
+      <View style={styles.comentario}>
+        <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
+        <Text>{foto.comentario}</Text>
+      </View>
+    );
+  }
+
   like() {
-    const fotoAtualizada = {...this.state.foto,
-      likeada: !this.state.foto.likeada
+    const { foto } = this.state;
+
+    let novaLista = [];
+    if(!foto.likeada) {
+      novaLista = [
+        ...foto.likers,
+        {login: foto.loginUsuario}
+      ];
+    } else {
+      novaLista = foto.likers.filter(liker => {
+        return liker.login !== foto.loginUsuario;
+      });
+    }
+
+    const fotoAtualizada = {
+      ...foto,
+      likeada: !foto.likeada,
+      likers: novaLista
     };
 
     this.setState({foto: fotoAtualizada});
@@ -33,7 +72,7 @@ export default class Post extends Component {
   render() {
     const { foto } = this.state;
     return (
-      <View>
+      <View style={styles.container}>
         <View style={styles.cabecalho}>
           <Image style={styles.fotoPerfil}
               source={{uri: foto.urlPerfil}} />
@@ -44,11 +83,15 @@ export default class Post extends Component {
             source={{uri: foto.urlFoto}} />
 
         <View style={styles.rodape}>
-          <TouchableOpacity onPress={this.like.bind(this)}>
+          <TouchableOpacity style={styles.botaoDeLike} onPress={this.like.bind(this)}>
             <Image style={styles.icone}
               source={this.carregaIcone(foto.likeada)} />
           </TouchableOpacity>
+
+          {this.exibeLikes(foto.likers)}
+          {this.exibeLegenda(foto)}
         </View>
+
       </View>
     );
   }
@@ -56,7 +99,12 @@ export default class Post extends Component {
 
 const width = Dimensions.get('window').width;
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginBottom: 5
+  },
   cabecalho: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     margin: 10,
@@ -74,10 +122,22 @@ const styles = StyleSheet.create({
   },
   rodape: {
     margin: 10,
-    height: 40
   },
   icone: {
     height: 30,
     width: 30
+  },
+  botaoDeLike: {
+    marginBottom: 10
+  },
+  likes: {
+    fontWeight: 'bold'
+  },
+  comentario: {
+    flexDirection: 'row'
+  },
+  tituloComentario: {
+    marginRight: 5,
+    fontWeight: 'bold',
   }
 });
