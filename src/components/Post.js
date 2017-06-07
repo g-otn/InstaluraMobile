@@ -5,6 +5,7 @@ import {
   View,
   Image,
   Dimensions,
+  TouchableOpacity
 } from 'react-native';
 
 export default class Post extends Component {
@@ -14,6 +15,19 @@ export default class Post extends Component {
     this.state = {
       foto: props.foto
     }
+  }
+
+  carregaIcone(likeada) {
+    return likeada ? require('../../resources/img/s2-checked.png')
+        : require('../../resources/img/s2.png')
+  }
+
+  like() {
+    const fotoAtualizada = {...this.state.foto,
+      likeada: !this.state.foto.likeada
+    };
+
+    this.setState({foto: fotoAtualizada});
   }
 
   render() {
@@ -30,8 +44,10 @@ export default class Post extends Component {
             source={{uri: foto.urlFoto}} />
 
         <View style={styles.rodape}>
-          <Image style={styles.icone}
-            source={require('../../resources/img/heart.png')} />
+          <TouchableOpacity onPress={this.like.bind(this)}>
+            <Image style={styles.icone}
+              source={this.carregaIcone(foto.likeada)} />
+          </TouchableOpacity>
         </View>
       </View>
     );
