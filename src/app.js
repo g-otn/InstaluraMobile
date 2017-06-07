@@ -14,11 +14,24 @@ import Post from './components/Post';
 
 class InstaluraMobile extends Component {
 
+  constructor() {
+    super();
+    this.state = {
+      fotos: []
+    }
+  }
+
+  componentDidMount() {
+    fetch('http://localhost:8080/api/public/fotos/rafael')
+      .then(response => response.json())
+      .then(json => this.setState({fotos: json}));
+  }
+
   render() {
     return (
       <FlatList
           style={styles.container}
-          data={[{id: 1, usuario: 'rafael'}, {id: 2, usuario: 'alberto'}]}
+          data={this.state.fotos}
           keyExtractor={ item => item.id }
           renderItem={ ({item}) => <Post foto={item}/> }
       />

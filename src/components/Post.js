@@ -17,16 +17,17 @@ export default class Post extends Component {
   }
 
   render() {
+    const { foto } = this.state;
     return (
       <View>
         <View style={styles.cabecalho}>
           <Image style={styles.fotoPerfil}
-              source={require('../../resources/img/instagram1.jpg')} />
-          <Text>{this.state.foto.usuario}</Text>
+              source={{uri: foto.urlPerfil}} />
+          <Text>{foto.loginUsuario}</Text>
         </View>
 
         <Image style={styles.foto}
-            source={require('../../resources/img/instagram1.jpg')} />
+            source={{uri: foto.urlFoto}} />
 
         <View style={styles.rodape}>
           <Image style={styles.icone}
