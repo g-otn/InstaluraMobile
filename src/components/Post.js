@@ -8,43 +8,24 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import Likes from './Likes';
+import Comentario from './Comentario';
+import InputComentario from './InputComentario';
 
 export default class Post extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      foto: props.foto,
-      valorComentario: ''
+      foto: props.foto
     }
-  }
-
-  carregaIcone(likeada) {
-    return likeada ? require('../../resources/img/s2-checked.png')
-        : require('../../resources/img/s2.png')
-  }
-
-  exibeLikes(likers) {
-    if(likers.length <= 0)
-      return;
-
-    return (
-      <Text style={styles.likes}>
-        {likers.length} {likers.length > 1 ? 'curtidas' : 'curtida'}
-      </Text>
-    );
   }
 
   exibeLegenda(foto) {
     if(foto.comentario === "")
       return;
 
-    return (
-      <View style={styles.comentario}>
-        <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
-        <Text>{foto.comentario}</Text>
-      </View>
-    );
+    return <Comentario usuario={foto.loginUsuario} texto={foto.comentario} />
   }
 
   like() {
@@ -71,22 +52,22 @@ export default class Post extends Component {
     this.setState({foto: fotoAtualizada});
   }
 
-  comenta() {
-    if(this.state.valorComentario === '')
+  comenta(valorComentario, inputComentario) {
+    if(valorComentario === '')
       return;
 
     const novaLista = [...this.state.foto.comentarios, {
-      id: this.state.valorComentario,
+      id: valorComentario,
       login: 'meuUsuario',
-      texto: this.state.valorComentario
+      texto: valorComentario
     }];
 
     const fotoAtualizada = {...this.state.foto,
       comentarios: novaLista
     };
 
-    this.setState({foto: fotoAtualizada, valorComentario: ''});
-    this.inputComentario.clear();
+    this.setState({foto: fotoAtualizada});
+    inputComentario.clear();
   }
 
   render() {
@@ -103,33 +84,18 @@ export default class Post extends Component {
             source={{uri: foto.urlFoto}} />
 
         <View style={styles.rodape}>
-          <TouchableOpacity style={styles.botaoDeLike} onPress={this.like.bind(this)}>
-            <Image style={styles.icone}
-              source={this.carregaIcone(foto.likeada)} />
-          </TouchableOpacity>
+          <Likes foto={foto} likeCallback={this.like.bind(this)}/>
 
-          {this.exibeLikes(foto.likers)}
           {this.exibeLegenda(foto)}
 
-          {foto.comentarios.map(comentario => (
-            <View style={styles.comentario} key={comentario.id}>
-              <Text style={styles.tituloComentario}>meuUsuario</Text>
-              <Text>{comentario.texto}</Text>
-            </View>
-          ))}
+          {foto.comentarios.map(comentario =>
+            <Comentario
+                key={comentario.id}
+                usuario={comentario.login}
+                texto={comentario.texto} />
+          )}
 
-          <View style={styles.novoComentario}>
-            <TextInput style={styles.input}
-                ref={input => this.inputComentario = input}
-                onChangeText={texto => this.setState({valorComentario: texto})}
-                placeholder="Adicione um comentário..."
-                underlineColorAndroid="transparent" />
-
-            <TouchableOpacity onPress={this.comenta.bind(this)}>
-              <Image style={styles.icone}
-                  source={require('../../resources/img/send.png')} />
-            </TouchableOpacity>
-          </View>
+          <InputComentario comentaCallback={this.comenta.bind(this)}/>
         </View>
       </View>
     );
@@ -162,34 +128,4 @@ const styles = StyleSheet.create({
   rodape: {
     margin: 10,
   },
-  icone: {
-    height: 30,
-    width: 30
-  },
-  botaoDeLike: {
-    marginBottom: 10
-  },
-  likes: {
-    fontWeight: 'bold'
-  },
-  comentario: {
-    marginBottom: 5,
-    flexDirection: 'row'
-  },
-  tituloComentario: {
-    marginRight: 5,
-    fontWeight: 'bold',
-  },
-  novoComentario: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd'
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderBottomColor: 'white'
-  }
 });
