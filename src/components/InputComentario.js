@@ -29,7 +29,8 @@ export default class InputComentario extends Component {
 
         <TouchableOpacity
             onPress={() => {
-              this.props.comentaCallback(this.state.valorComentario, this.inputComentario);
+              this.props.comentaCallback(this.props.idFoto,
+                  this.state.valorComentario, this.inputComentario);
               this.setState({valorComentario: ''});
             }}>
           <Image style={styles.icone}

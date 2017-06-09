@@ -14,13 +14,6 @@ import InputComentario from './InputComentario';
 
 export default class Post extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      foto: props.foto
-    }
-  }
-
   exibeLegenda(foto) {
     if(foto.comentario === "")
       return;
@@ -28,50 +21,8 @@ export default class Post extends Component {
     return <Comentario usuario={foto.loginUsuario} texto={foto.comentario} />
   }
 
-  like() {
-    const { foto } = this.state;
-
-    let novaLista = [];
-    if(!foto.likeada) {
-      novaLista = [
-        ...foto.likers,
-        {login: foto.loginUsuario}
-      ];
-    } else {
-      novaLista = foto.likers.filter(liker => {
-        return liker.login !== foto.loginUsuario;
-      });
-    }
-
-    const fotoAtualizada = {
-      ...foto,
-      likeada: !foto.likeada,
-      likers: novaLista
-    };
-
-    this.setState({foto: fotoAtualizada});
-  }
-
-  comenta(valorComentario, inputComentario) {
-    if(valorComentario === '')
-      return;
-
-    const novaLista = [...this.state.foto.comentarios, {
-      id: valorComentario,
-      login: 'meuUsuario',
-      texto: valorComentario
-    }];
-
-    const fotoAtualizada = {...this.state.foto,
-      comentarios: novaLista
-    };
-
-    this.setState({foto: fotoAtualizada});
-    inputComentario.clear();
-  }
-
   render() {
-    const { foto } = this.state;
+    const { foto } = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.cabecalho}>
@@ -84,7 +35,7 @@ export default class Post extends Component {
             source={{uri: foto.urlFoto}} />
 
         <View style={styles.rodape}>
-          <Likes foto={foto} likeCallback={this.like.bind(this)}/>
+          <Likes foto={foto} likeCallback={this.props.likeCallback}/>
 
           {this.exibeLegenda(foto)}
 
@@ -95,7 +46,7 @@ export default class Post extends Component {
                 texto={comentario.texto} />
           )}
 
-          <InputComentario comentaCallback={this.comenta.bind(this)}/>
+          <InputComentario idFoto={foto.id} comentaCallback={this.props.comentaCallback}/>
         </View>
       </View>
     );
