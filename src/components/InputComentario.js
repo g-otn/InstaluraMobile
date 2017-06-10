@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 40,
-    borderBottomColor: 'white'
+    height: 40
   }
 });
