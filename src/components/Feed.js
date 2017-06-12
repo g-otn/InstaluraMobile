@@ -47,25 +47,43 @@ export default class Feed extends Component {
   like(idFoto) {
     const foto = this.buscaPorId(idFoto);
 
-    let novaLista = [];
-    if(!foto.likeada) {
-      novaLista = [
-        ...foto.likers,
-        {login: 'meuUsuario'}
-      ];
-    } else {
-      novaLista = foto.likers.filter(liker => {
-        return liker.login !== 'meuUsuario';
+    AsyncStorage.getItem('usuario')
+      .then(usuario => {
+
+        let novaLista = [];
+        if(!foto.likeada) {
+          novaLista = [
+            ...foto.likers,
+            {login: usuario}
+          ];
+        } else {
+          novaLista = foto.likers.filter(liker => {
+            return liker.login !== usuario;
+          });
+        }
+        return novaLista;
+      })
+      .then(novaLista => {
+        const fotoAtualizada = {
+          ...foto,
+          likeada: !foto.likeada,
+          likers: novaLista
+        };
+        this.atualizaFotos(fotoAtualizada);
       });
-    }
 
-    const fotoAtualizada = {
-      ...foto,
-      likeada: !foto.likeada,
-      likers: novaLista
-    };
-
-    this.atualizaFotos(fotoAtualizada);
+    const uri = `http://localhost:8080/api/fotos/${idFoto}/like`;
+    AsyncStorage.getItem('token')
+      .then(token => {
+        const requestInfo = {
+          method: 'POST',
+          headers: new Headers({
+            'X-AUTH-TOKEN': token
+          })
+        }
+        return requestInfo;
+      })
+      .then(requestInfo => fetch(uri, requestInfo));
   }
 
   comenta(fotoId, valorComentario, inputComentario) {
