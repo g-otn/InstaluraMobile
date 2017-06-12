@@ -86,24 +86,43 @@ export default class Feed extends Component {
       .then(requestInfo => fetch(uri, requestInfo));
   }
 
-  comenta(fotoId, valorComentario, inputComentario) {
+  comenta(idFoto, valorComentario, inputComentario) {
     if(valorComentario === '')
       return;
 
-    const foto = this.buscaPorId(fotoId);
+    const foto = this.buscaPorId(idFoto);
 
-    const novaLista = [...foto.comentarios, {
-      id: valorComentario,
-      login: 'meuUsuario',
-      texto: valorComentario
-    }];
-
-    const fotoAtualizada = {...foto,
-      comentarios: novaLista
-    };
-
-    this.atualizaFotos(fotoAtualizada);
-    inputComentario.clear();
+    const uri = `http://localhost:8080/api/fotos/${idFoto}/comment`;
+    AsyncStorage.getItem('token')
+      .then(token => {
+        const requestInfo = {
+          method: 'POST',
+          body: JSON.stringify({
+            texto: valorComentario
+          }),
+          headers: new Headers({
+            'X-AUTH-TOKEN': token,
+            'Content-type': 'application/json'
+          })
+        };
+        return requestInfo;
+      })
+      .then(requestInfo => fetch(uri, requestInfo))
+      .then(response => response.json())
+      .then(comentario => {
+        const novaLista = [
+          ...foto.comentarios,
+          comentario
+        ];
+        return novaLista;
+      })
+      .then(novaLista => {
+        const fotoAtualizada = {...foto,
+          comentarios: novaLista
+        };
+        this.atualizaFotos(fotoAtualizada);
+        inputComentario.clear();
+      });
   }
 
   render() {
