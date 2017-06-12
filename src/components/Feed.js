@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import Post from './Post';
+import fetchInstaluraApi from '../api/fetchInstaluraApi';
 
 export default class Feed extends Component {
 
@@ -17,20 +18,8 @@ export default class Feed extends Component {
   }
 
   componentDidMount() {
-    const uri = 'http://localhost:8080/api/fotos';
-
-    AsyncStorage.getItem('token')
-      .then(token => {
-        const requestInfo = {
-          headers: new Headers({
-            'X-AUTH-TOKEN': token
-          })
-        };
-        return requestInfo;
-      })
-      .then(requestInfo => fetch(uri, requestInfo))
-      .then(response => response.json())
-      .then(json => this.setState({fotos: json}));
+    fetchInstaluraApi('/fotos')
+      .then(fotos => this.setState({fotos}));
   }
 
   buscaPorId(idFoto) {
@@ -72,18 +61,9 @@ export default class Feed extends Component {
         this.atualizaFotos(fotoAtualizada);
       });
 
-    const uri = `http://localhost:8080/api/fotos/${idFoto}/like`;
-    AsyncStorage.getItem('token')
-      .then(token => {
-        const requestInfo = {
-          method: 'POST',
-          headers: new Headers({
-            'X-AUTH-TOKEN': token
-          })
-        }
-        return requestInfo;
-      })
-      .then(requestInfo => fetch(uri, requestInfo));
+    const uri = `/fotos/${idFoto}/like`;
+    fetchInstaluraApi(uri, 'POST');
+
   }
 
   comenta(idFoto, valorComentario, inputComentario) {
@@ -92,23 +72,8 @@ export default class Feed extends Component {
 
     const foto = this.buscaPorId(idFoto);
 
-    const uri = `http://localhost:8080/api/fotos/${idFoto}/comment`;
-    AsyncStorage.getItem('token')
-      .then(token => {
-        const requestInfo = {
-          method: 'POST',
-          body: JSON.stringify({
-            texto: valorComentario
-          }),
-          headers: new Headers({
-            'X-AUTH-TOKEN': token,
-            'Content-type': 'application/json'
-          })
-        };
-        return requestInfo;
-      })
-      .then(requestInfo => fetch(uri, requestInfo))
-      .then(response => response.json())
+    const uri = `/fotos/${idFoto}/comment`;
+    fetchInstaluraApi(uri, 'POST', {texto: valorComentario})
       .then(comentario => {
         const novaLista = [
           ...foto.comentarios,
