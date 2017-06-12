@@ -7,7 +7,8 @@ import {
   Image,
   View,
   Dimensions,
-  AsyncStorage
+  AsyncStorage,
+  ActivityIndicator
 } from 'react-native';
 
 export default class Login extends Component {
@@ -18,7 +19,25 @@ export default class Login extends Component {
       usuario: '',
       senha: '',
       mensagem: '',
+      loading: true,
     }
+  }
+
+  componentWillMount() {
+    AsyncStorage.getItem('token')
+      .then(token => {
+        if(token)
+          this.redireciona();
+        else
+          this.setState({loading: false})
+      });
+  }
+
+  redireciona() {
+    this.props.navigator.resetTo({
+      screen: 'Feed',
+      title: 'Instalura',
+    });
   }
 
   efetuaLogin() {
@@ -44,11 +63,24 @@ export default class Login extends Component {
       .then(token => {
         AsyncStorage.setItem('token', token);
         AsyncStorage.setItem('usuario', this.state.usuario);
+        this.redireciona();
       })
       .catch(erro => this.setState({mensagem: erro}));
   }
 
   render() {
+    if(this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator
+              animating={true}
+              color="#2980b9"
+              size="large" />
+          <Text style={styles.loading}>Loading...</Text>
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
 
@@ -106,5 +138,11 @@ const styles = StyleSheet.create({
   mensagem: {
     marginTop: 15,
     color: '#e74c3c',
+  },
+  loading: {
+    marginTop: 10,
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: '#95a5a6'
   }
 });

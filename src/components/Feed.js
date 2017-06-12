@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
+  AsyncStorage,
   FlatList,
 } from 'react-native';
 
@@ -16,7 +17,18 @@ export default class Feed extends Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8080/api/public/fotos/rafael')
+    const uri = 'http://localhost:8080/api/fotos';
+
+    AsyncStorage.getItem('token')
+      .then(token => {
+        const requestInfo = {
+          headers: new Headers({
+            'X-AUTH-TOKEN': token
+          })
+        };
+        return requestInfo;
+      })
+      .then(requestInfo => fetch(uri, requestInfo))
       .then(response => response.json())
       .then(json => this.setState({fotos: json}));
   }
@@ -79,7 +91,6 @@ export default class Feed extends Component {
   render() {
     return (
       <FlatList
-          style={styles.container}
           data={this.state.fotos}
           keyExtractor={ item => item.id }
           renderItem={ ({item}) =>
@@ -90,9 +101,3 @@ export default class Feed extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 20
-  }
-});
