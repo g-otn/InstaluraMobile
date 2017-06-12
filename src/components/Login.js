@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
+  Text,
   TextInput,
   Button,
   Image,
   View,
-  Dimensions
+  Dimensions,
+  AsyncStorage
 } from 'react-native';
 
 export default class Login extends Component {
@@ -15,6 +17,7 @@ export default class Login extends Component {
     this.state = {
       usuario: '',
       senha: '',
+      mensagem: '',
     }
   }
 
@@ -38,7 +41,11 @@ export default class Login extends Component {
 
         throw 'Não foi possível efetuar login';
       })
-      .then(token => console.warn(token));
+      .then(token => {
+        AsyncStorage.setItem('token', token);
+        AsyncStorage.setItem('usuario', this.state.usuario);
+      })
+      .catch(erro => this.setState({mensagem: erro}));
   }
 
   render() {
@@ -67,6 +74,10 @@ export default class Login extends Component {
               onPress={this.efetuaLogin.bind(this)}/>
         </View>
 
+        <Text style={styles.mensagem}>
+          {this.state.mensagem}
+        </Text>
+
       </View>
     );
   }
@@ -92,4 +103,8 @@ const styles = StyleSheet.create({
   input: {
     height: 40
   },
+  mensagem: {
+    marginTop: 15,
+    color: '#e74c3c',
+  }
 });
