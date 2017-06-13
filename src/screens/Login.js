@@ -35,7 +35,7 @@ export default class Login extends Component {
 
   redireciona() {
     this.props.navigator.resetTo({
-      screen: 'Feed',
+      screen: 'Timeline',
       title: 'Instalura',
     });
   }

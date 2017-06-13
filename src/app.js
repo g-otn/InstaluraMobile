@@ -4,13 +4,15 @@
  */
 
 import { Navigation } from 'react-native-navigation';
-import Login from './components/Login';
-import Feed from './components/Feed';
-import Notificacao from './components/Notificacao';
+import Login from './screens/Login';
+import Timeline from './screens/Timeline';
+import PerfilUsuario from './screens/PerfilUsuario';
+import Notificacao from './screens/Notificacao';
 
 export default () => {
   Navigation.registerComponent('Login', () => Login);
-  Navigation.registerComponent('Feed', () => Feed);
+  Navigation.registerComponent('Timeline', () => Timeline);
+  Navigation.registerComponent('PerfilUsuario', () => PerfilUsuario);
   Navigation.registerComponent('Notificacao', () => Notificacao);
 
   Navigation.startSingleScreenApp({

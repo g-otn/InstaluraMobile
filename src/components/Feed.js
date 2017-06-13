@@ -1,36 +1,35 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
   AsyncStorage,
-  FlatList,
-  Platform,
-  ToastAndroid,
+  StyleSheet,
   View,
-  TouchableOpacity,
-  Text
+  Text,
+  TouchableOpacity
 } from 'react-native';
-import { Navigation } from 'react-native-navigation';
 
 import Post from './Post';
+import UsuarioInfo from './UsuarioInfo';
 import fetchInstaluraApi from '../api/fetchInstaluraApi';
 import exibeNotificacao from '../util/NotificacaoUtils';
 
 export default class Feed extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       fotos: [],
       status: 'NORMAL'
     }
+    this.props.navigator.setOnNavigatorEvent(this.onNavigate.bind(this));
   }
 
-  componentDidMount() {
-    this.carregaFotos();
+  onNavigate(evento) {
+    if(evento.id === 'willAppear')
+      this.carregaFotos();
   }
 
   carregaFotos() {
-    fetchInstaluraApi('/fotos')
+    fetchInstaluraApi(this.props.uri)
       .then(fotos => this.setState({fotos, status: 'NORMAL'}))
       .catch(erro => {
         this.setState({status: 'FALHA_CARREGAMENTO'});
@@ -113,10 +112,36 @@ export default class Feed extends Component {
       inputComentario.clear();
   }
 
+  verPerfil(foto) {
+    if(this.props.screen !== 'Timeline')
+      return;
+
+    this.props.navigator.push({
+      screen: 'PerfilUsuario',
+      title: foto.loginUsuario,
+      backButtonTitle: '',
+      passProps: {
+        usuario: foto.loginUsuario,
+        fotoDoPerfil: foto.urlPerfil
+      }
+    });
+  }
+
+  exibeUsuarioInfo() {
+    if(this.props.screen !== 'Timeline') {
+      return (
+        <UsuarioInfo
+            posts={this.state.fotos.length}
+            {...this.props} />
+      );
+    }
+  }
+
   render() {
     if(this.state.status !== 'NORMAL') {
       return (
-        <TouchableOpacity style={styles.container} onPress={this.carregaFotos.bind(this)}>
+        <TouchableOpacity style={styles.container}
+            onPress={this.carregaFotos.bind(this)}>
           <Text style={[styles.texto, styles.titulo]}>Ops!</Text>
           <Text style={styles.texto}>Não foi possível carregar o feed.</Text>
           <Text style={styles.texto}>Toque para tentar novamente</Text>
@@ -125,14 +150,17 @@ export default class Feed extends Component {
     }
 
     return (
-      <FlatList
-          data={this.state.fotos}
-          keyExtractor={ item => item.id }
-          renderItem={ ({item}) =>
-              <Post foto={item}
-                  likeCallback={this.like.bind(this)}
-                  comentaCallback={this.comenta.bind(this)} />
-          }/>
+      <View>
+        {this.exibeUsuarioInfo()}
+        {this.state.fotos.map(foto =>
+          <Post key={foto.id}
+            foto={foto}
+            likeCallback={this.like.bind(this)}
+            comentaCallback={this.comenta.bind(this)}
+            verPerfilCallback={this.verPerfil.bind(this)}
+          />
+        )}
+      </View>
     );
   }
 }
@@ -141,7 +169,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   texto: {
     color: '#7f8c8d',
