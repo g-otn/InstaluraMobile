@@ -3,10 +3,14 @@ import {
   StyleSheet,
   AsyncStorage,
   FlatList,
+  Platform,
+  ToastAndroid
 } from 'react-native';
+import { Navigation } from 'react-native-navigation';
 
 import Post from './Post';
 import fetchInstaluraApi from '../api/fetchInstaluraApi';
+import exibeNotificacao from '../util/NotificacaoUtils';
 
 export default class Feed extends Component {
 
@@ -34,6 +38,7 @@ export default class Feed extends Component {
   }
 
   like(idFoto) {
+    const listaOriginal = this.state.fotos;
     const foto = this.buscaPorId(idFoto);
 
     AsyncStorage.getItem('usuario')
@@ -62,14 +67,17 @@ export default class Feed extends Component {
       });
 
     const uri = `/fotos/${idFoto}/like`;
-    fetchInstaluraApi(uri, 'POST');
-
+    fetchInstaluraApi(uri, 'POST')
+      .catch(erro => {
+        exibeNotificacao(erro);
+        this.setState({fotos: listaOriginal});
+      });
   }
 
   comenta(idFoto, valorComentario, inputComentario) {
     if(valorComentario === '')
       return;
-
+      
     const foto = this.buscaPorId(idFoto);
 
     const uri = `/fotos/${idFoto}/comment`;
@@ -86,8 +94,12 @@ export default class Feed extends Component {
           comentarios: novaLista
         };
         this.atualizaFotos(fotoAtualizada);
-        inputComentario.clear();
+      })
+      .catch(erro => {
+        exibeNotificacao(erro);
       });
+
+      inputComentario.clear();
   }
 
   render() {

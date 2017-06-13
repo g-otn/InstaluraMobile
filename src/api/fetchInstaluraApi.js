@@ -22,5 +22,10 @@ export default (uri, metodo = 'GET', dados) => {
       return requestInfo;
     })
     .then(requestInfo => fetch(endereco, requestInfo))
-    .then(response => response.json());
+    .then(response => {
+        if(response.ok)
+          return response.json();
+
+        throw 'Desculpe! Algo deu errado.'
+    });
 }
