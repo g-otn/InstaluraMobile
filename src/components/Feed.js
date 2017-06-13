@@ -4,7 +4,10 @@ import {
   AsyncStorage,
   FlatList,
   Platform,
-  ToastAndroid
+  ToastAndroid,
+  View,
+  TouchableOpacity,
+  Text
 } from 'react-native';
 import { Navigation } from 'react-native-navigation';
 
@@ -17,13 +20,21 @@ export default class Feed extends Component {
   constructor() {
     super();
     this.state = {
-      fotos: []
+      fotos: [],
+      status: 'NORMAL'
     }
   }
 
   componentDidMount() {
+    this.carregaFotos();
+  }
+
+  carregaFotos() {
     fetchInstaluraApi('/fotos')
-      .then(fotos => this.setState({fotos}));
+      .then(fotos => this.setState({fotos, status: 'NORMAL'}))
+      .catch(erro => {
+        this.setState({status: 'FALHA_CARREGAMENTO'});
+      });
   }
 
   buscaPorId(idFoto) {
@@ -77,7 +88,7 @@ export default class Feed extends Component {
   comenta(idFoto, valorComentario, inputComentario) {
     if(valorComentario === '')
       return;
-      
+
     const foto = this.buscaPorId(idFoto);
 
     const uri = `/fotos/${idFoto}/comment`;
@@ -103,6 +114,16 @@ export default class Feed extends Component {
   }
 
   render() {
+    if(this.state.status !== 'NORMAL') {
+      return (
+        <TouchableOpacity style={styles.container} onPress={this.carregaFotos.bind(this)}>
+          <Text style={[styles.texto, styles.titulo]}>Ops!</Text>
+          <Text style={styles.texto}>Não foi possível carregar o feed.</Text>
+          <Text style={styles.texto}>Toque para tentar novamente</Text>
+        </TouchableOpacity>
+      );
+    }
+
     return (
       <FlatList
           data={this.state.fotos}
@@ -115,3 +136,19 @@ export default class Feed extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  texto: {
+    color: '#7f8c8d',
+    fontSize: 20
+  },
+  titulo: {
+    fontWeight: 'bold',
+    fontSize: 26
+  }
+});
