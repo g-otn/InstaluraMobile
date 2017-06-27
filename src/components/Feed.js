@@ -41,10 +41,10 @@ export default class Feed extends Component {
   }
 
   atualizaFotos(fotoAtualizada) {
-    const fotos = this.state.fotos
+    const listaAtualizada = this.state.fotos
         .map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto);
 
-    this.setState({fotos});
+    this.setState({fotos: listaAtualizada});
   }
 
   like(idFoto) {
