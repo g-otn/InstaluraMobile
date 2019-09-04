@@ -15,7 +15,7 @@ export default class Post extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      foto: this.props.foto
+      foto: this.props.foto // === {...this.props.foto}
     }
   }
 
@@ -26,9 +26,22 @@ export default class Post extends Component {
   }
 
   like() {
+    const { foto } = this.state
+    let novaLista = []
+    
+    if (!foto.likeada) {
+      novaLista = [
+        ...foto.likers,
+        {login: 'meuUsuario'}
+      ]
+    } else {
+      novaLista = foto.likers.filter(liker => liker.login !== 'meuUsuario')
+    }
+
     const fotoAtualizada = {
-      ...this.state.foto,
-      likeada: !this.state.foto.likeada
+      ...foto,
+      likeada: !foto.likeada,
+      likers: novaLista
     }
 
     this.setState({ foto: fotoAtualizada })
