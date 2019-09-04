@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import {
   Image,
   View,
@@ -11,17 +11,31 @@ import Post from './src/components/Post'
 
 const width = Dimensions.get('screen').width
 
-const App = () => {
-  const fotos = [{ id: 1, usuario: 'rafael' }, { id: 2, usuario: 'alberto' }, { id: 3, usuario: 'gabriel' }]
+export default class App extends Component {
 
-  return (
-    <FlatList
-      style={styles.container}
-      keyExtractor={item => item.id.toString()} // https://stackoverflow.com/a/49577737
-      data={fotos}
-      renderItem={({ item }) => <Post foto={item} />}
-    />
-  )
+  constructor() {
+    super()
+    this.state = {
+      fotos: []
+    }
+  }
+
+  componentDidMount() {
+    fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+      .then(resposta => resposta.json())
+      .then(json => this.setState({ fotos: json }))
+  }
+
+  render() {
+    return (
+      <FlatList
+        style={styles.container}
+        keyExtractor={item => item.id.toString()} // https://stackoverflow.com/a/49577737
+        data={this.state.fotos}
+        renderItem={({ item }) => <Post foto={item} />}
+      />
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -29,5 +43,3 @@ const styles = StyleSheet.create({
     marginTop: 30
   }
 })
-
-export default App
