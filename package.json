@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
+    "log": "react-native log-android",
     "test": "jest",
     "lint": "eslint ."
   },
