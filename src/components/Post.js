@@ -5,7 +5,8 @@ import {
   Text,
   Dimensions,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput
 } from 'react-native'
 
 const width = Dimensions.get('screen').width
@@ -28,11 +29,11 @@ export default class Post extends Component {
   like() {
     const { foto } = this.state
     let novaLista = []
-    
+
     if (!foto.likeada) {
       novaLista = [
         ...foto.likers,
-        {login: 'meuUsuario'}
+        { login: 'meuUsuario' }
       ]
     } else {
       novaLista = foto.likers.filter(liker => liker.login !== 'meuUsuario')
@@ -77,22 +78,36 @@ export default class Post extends Component {
       <View>
         <View style={styles.cabecalho}>
           <Image source={{ uri: foto.urlPerfil }}
-            style={styles.fotoDePerfil}
-          />
+            style={styles.fotoDePerfil}/>
           <Text>{foto.loginUsuario}</Text>
         </View>
+
         <Image source={{ uri: foto.urlFoto }}
           style={styles.foto}
         />
+
         <View style={styles.rodape}>
           <TouchableOpacity onPress={this.like.bind(this)}>
             <Image source={this.carregarIcone(foto.likeada)}
-              style={styles.botaoDeLike}
-            />
+              style={styles.botaoDeLike}/>
           </TouchableOpacity>
 
           {this.exibeLikers(foto.likers)}
           {this.exibeLegenda(foto)}
+
+          {foto.comentarios.map(comentario =>
+            <View style={styles.comentario} key={comentario.id}>
+              <Text style={styles.tituloComentario}>{comentario.login}</Text>
+              <Text>{comentario.texto}</Text>
+            </View>
+          )}
+          
+          <View style={styles.novoComentario}>
+            <TextInput style={styles.input}
+              placeholder="Adicione um comentário..."/>
+            <Image source={require('../../assets/img/send.png')}
+              style={styles.icone}/>
+          </View>
         </View>
       </View>
     )
@@ -132,5 +147,19 @@ const styles = StyleSheet.create({
   tituloComentario: {
     fontWeight: 'bold',
     marginRight: 5
+  },
+  novoComentario: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd'
+  },
+  input: {
+    flex: 1,
+    height: 40
+  },
+  icone: {
+    width: 30,
+    height: 30
   }
 })
