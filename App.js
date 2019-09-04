@@ -7,6 +7,7 @@ import {
   FlatList,
   StyleSheet
 } from 'react-native'
+import Post from './src/components/Post'
 
 const width = Dimensions.get('screen').width
 
@@ -18,43 +19,14 @@ const App = () => {
       style={styles.container}
       keyExtractor={item => item.id.toString()} // https://stackoverflow.com/a/49577737
       data={fotos}
-      renderItem={({item}) => {
-        return (
-          <View>
-            <View style={styles.cabecalho}>
-              <Image source={require('./assets/img/alura.jpg')}
-                style={styles.fotoDePerfil}
-              />
-              <Text>{item.usuario}</Text>
-            </View>
-            <Image source={require('./assets/img/alura.jpg')}
-              style={styles.foto}
-            />
-          </View>
-        )
-      }}
+      renderItem={({ item }) => <Post foto={item} />}
     />
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20
-  },
-  cabecalho: {
-    margin: 10, 
-    flexDirection: 'row', 
-    alignItems: 'center'
-  },
-  fotoDePerfil: {
-    marginRight: 10, 
-    borderRadius: 25, 
-    width: 50, 
-    height: 50 
-  },
-  foto: { 
-    width: width, 
-    height: width 
+    marginTop: 30
   }
 })
 
