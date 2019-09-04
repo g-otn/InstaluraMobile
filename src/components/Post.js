@@ -16,7 +16,8 @@ export default class Post extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      foto: this.props.foto // === {...this.props.foto}
+      foto: this.props.foto, // === {...this.props.foto}
+      valorComentario: ''
     }
   }
 
@@ -71,6 +72,29 @@ export default class Post extends Component {
     )
   }
 
+  adicionarComentario() {
+    if (this.state.valorComentario === '')
+      return
+
+    const novaLista = [...this.state.foto.comentarios, {
+      id: this.state.valorComentario,
+      login: 'meuUsuario',
+      texto: this.state.valorComentario
+    }]
+
+    const fotoAtualizada = {
+      ...this.state.foto,
+      comentarios: novaLista
+    }
+
+    this.setState({ 
+      foto: fotoAtualizada,
+      valorComentario: ''
+    })
+
+    this.inputComentario.clear()
+  }
+
   render() {
     const { foto } = this.state
 
@@ -78,7 +102,7 @@ export default class Post extends Component {
       <View>
         <View style={styles.cabecalho}>
           <Image source={{ uri: foto.urlPerfil }}
-            style={styles.fotoDePerfil}/>
+            style={styles.fotoDePerfil} />
           <Text>{foto.loginUsuario}</Text>
         </View>
 
@@ -89,7 +113,7 @@ export default class Post extends Component {
         <View style={styles.rodape}>
           <TouchableOpacity onPress={this.like.bind(this)}>
             <Image source={this.carregarIcone(foto.likeada)}
-              style={styles.botaoDeLike}/>
+              style={styles.botaoDeLike} />
           </TouchableOpacity>
 
           {this.exibeLikers(foto.likers)}
@@ -101,12 +125,16 @@ export default class Post extends Component {
               <Text>{comentario.texto}</Text>
             </View>
           )}
-          
+
           <View style={styles.novoComentario}>
             <TextInput style={styles.input}
-              placeholder="Adicione um comentário..."/>
-            <Image source={require('../../assets/img/send.png')}
-              style={styles.icone}/>
+              placeholder="Adicione um comentário..."
+              ref={input => this.inputComentario = input}
+              onChangeText={texto => this.setState({ valorComentario: texto })} />
+            <TouchableOpacity onPress={this.adicionarComentario.bind(this)}>
+              <Image source={require('../../assets/img/send.png')}
+                style={styles.icone} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -156,10 +184,11 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 40
+    height: 40,
+    fontSize: 18
   },
   icone: {
-    width: 30,
-    height: 30
+    width: 40,
+    height: 40
   }
 })
