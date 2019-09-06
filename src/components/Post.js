@@ -9,6 +9,7 @@ import {
   TextInput,
   FlatList
 } from 'react-native'
+import InputComentario from './InputComentario'
 
 const width = Dimensions.get('screen').width
 
@@ -73,14 +74,14 @@ export default class Post extends Component {
     )
   }
 
-  adicionarComentario() {
-    if (this.state.valorComentario === '')
+  adicionarComentario(valorComentario, inputComentario) {
+    if (valorComentario === '')
       return
 
     const novaLista = [...this.state.foto.comentarios, {
-      id: this.state.valorComentario,
+      id: valorComentario,
       login: 'meuUsuario',
-      texto: this.state.valorComentario
+      texto: valorComentario
     }]
 
     const fotoAtualizada = {
@@ -88,12 +89,9 @@ export default class Post extends Component {
       comentarios: novaLista
     }
 
-    this.setState({
-      foto: fotoAtualizada,
-      valorComentario: ''
-    })
+    this.setState({ foto: fotoAtualizada })
 
-    this.inputComentario.clear()
+    inputComentario.clear()
   }
 
   render() {
@@ -130,17 +128,7 @@ export default class Post extends Component {
               </View>
             } />
 
-          <View style={styles.novoComentario}>
-            <TextInput style={styles.input}
-              placeholder="Adicione um comentário..."
-              ref={input => this.inputComentario = input}
-              onChangeText={texto => this.setState({ valorComentario: texto })} 
-              underlineColorAndroid="transparent"/>
-            <TouchableOpacity onPress={this.adicionarComentario.bind(this)}>
-              <Image source={require('../../assets/img/send.png')}
-                style={styles.icone} />
-            </TouchableOpacity>
-          </View>
+          <InputComentario comentarioCallback={this.adicionarComentario.bind(this)} />
         </View>
       </View>
     )
@@ -180,20 +168,5 @@ const styles = StyleSheet.create({
   tituloComentario: {
     fontWeight: 'bold',
     marginRight: 5
-  },
-  novoComentario: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd'
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    fontSize: 18
-  },
-  icone: {
-    width: 40,
-    height: 40
   }
 })
