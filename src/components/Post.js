@@ -9,6 +9,7 @@ import {
   TextInput,
   FlatList
 } from 'react-native'
+import Comentario from './Comentario'
 import InputComentario from './InputComentario'
 import Likes from './Likes'
 
@@ -54,10 +55,7 @@ export default class Post extends Component {
             data={foto.comentarios}
             keyExtractor={item => item.id.toString()}
             renderItem={({ item }) =>
-              <View style={styles.comentario}>
-                <Text style={styles.tituloComentario}>{item.login}</Text>
-                <Text>{item.texto}</Text>
-              </View>
+              <Comentario usuario={item.login} texto={item.texto}/>
             } />
 
           <InputComentario idFoto={foto.id}
