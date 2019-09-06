@@ -122,7 +122,7 @@ export default class Post extends Component {
 
           <FlatList
             data={foto.comentarios}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id.toString()}
             renderItem={({ item }) =>
               <View style={styles.comentario}>
                 <Text style={styles.tituloComentario}>{item.login}</Text>
@@ -134,7 +134,8 @@ export default class Post extends Component {
             <TextInput style={styles.input}
               placeholder="Adicione um comentário..."
               ref={input => this.inputComentario = input}
-              onChangeText={texto => this.setState({ valorComentario: texto })} />
+              onChangeText={texto => this.setState({ valorComentario: texto })} 
+              underlineColorAndroid="transparent"/>
             <TouchableOpacity onPress={this.adicionarComentario.bind(this)}>
               <Image source={require('../../assets/img/send.png')}
                 style={styles.icone} />

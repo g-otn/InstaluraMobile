@@ -5,7 +5,8 @@ import {
   Text,
   Dimensions,
   FlatList,
-  StyleSheet
+  StyleSheet,
+  Platform
 } from 'react-native'
 import Post from './src/components/Post'
 
@@ -38,8 +39,9 @@ export default class App extends Component {
   }
 }
 
+const margem = Platform.OS === 'ios' ? 30 : 0
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30
+    marginTop: margem
   }
 })
