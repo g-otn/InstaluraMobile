@@ -1,16 +1,10 @@
 import React, { Component } from 'react'
 import {
-  Image,
-  View,
-  Text,
-  Dimensions,
   FlatList,
   StyleSheet,
   Platform
 } from 'react-native'
 import Post from './src/components/Post'
-
-const width = Dimensions.get('screen').width
 
 export default class App extends Component {
 
@@ -27,13 +21,38 @@ export default class App extends Component {
       .then(json => this.setState({ fotos: json }))
   }
 
+  like(idFoto) {
+    const foto = this.state.fotos.find(foto => foto.id === idFoto)
+    let novaLista = []
+
+    if (!foto.likeada) {
+      novaLista = [
+        ...foto.likers,
+        { login: 'meuUsuario' }
+      ]
+    } else {
+      novaLista = foto.likers.filter(liker => liker.login !== 'meuUsuario')
+    }
+
+    const fotoAtualizada = {
+      ...foto,
+      likeada: !foto.likeada,
+      likers: novaLista
+    }
+
+    const novasFotos = this.state.fotos
+      .map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto)
+
+    this.setState({ fotos: novasFotos })
+  }
+
   render() {
     return (
       <FlatList
         style={styles.container}
-        keyExtractor={item => item.id.toString()} // https://stackoverflow.com/a/49577737
+        keyExtractor={item => item.id.toString()}
         data={this.state.fotos}
-        renderItem={({ item }) => <Post foto={item} />}
+        renderItem={({ item }) => <Post foto={item} likeCallback={this.like.bind(this)} />}
       />
     )
   }
