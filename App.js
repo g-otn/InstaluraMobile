@@ -21,10 +21,21 @@ export default class App extends Component {
       .then(json => this.setState({ fotos: json }))
   }
 
-  like(idFoto) {
-    const foto = this.state.fotos.find(foto => foto.id === idFoto)
-    let novaLista = []
+  buscaPorId(idFoto) {
+    return this.state.fotos
+      .find(foto => foto.id === idFoto)
+  }
 
+  atualizarFotos(fotoAtualizada) {
+    const fotos = this.state.fotos.map(foto =>
+      foto.id === fotoAtualizada.id ? fotoAtualizada : foto);
+    this.setState({ fotos });
+  }
+
+  like(idFoto) {
+    const foto = this.buscaPorId(idFoto)
+    
+    let novaLista = []
     if (!foto.likeada) {
       novaLista = [
         ...foto.likers,
@@ -40,17 +51,14 @@ export default class App extends Component {
       likers: novaLista
     }
 
-    const novasFotos = this.state.fotos
-      .map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto)
-
-    this.setState({ fotos: novasFotos })
+    this.atualizarFotos(fotoAtualizada)
   }
 
   adicionarComentario(idFoto, valorComentario, inputComentario) {
     if (valorComentario === '')
       return
 
-    const foto = this.state.fotos.find(foto => foto.id === idFoto)
+    const foto = this.buscaPorId(idFoto)
 
     const novaLista = [...foto.comentarios, {
       id: valorComentario,
@@ -63,10 +71,7 @@ export default class App extends Component {
       comentarios: novaLista
     }
 
-    const novasFotos = this.state.fotos
-      .map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto)
-
-    this.setState({ fotos: novasFotos })
+    this.atualizarFotos(fotoAtualizada)
 
     inputComentario.clear()
   }
