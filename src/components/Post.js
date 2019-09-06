@@ -28,28 +28,8 @@ export default class Post extends Component {
     )
   }
 
-  adicionarComentario(valorComentario, inputComentario) {
-    if (valorComentario === '')
-      return
-
-    const novaLista = [...this.state.foto.comentarios, {
-      id: valorComentario,
-      login: 'meuUsuario',
-      texto: valorComentario
-    }]
-
-    const fotoAtualizada = {
-      ...this.state.foto,
-      comentarios: novaLista
-    }
-
-    this.setState({ foto: fotoAtualizada })
-
-    inputComentario.clear()
-  }
-
   render() {
-    const { foto, likeCallback } = this.props
+    const { foto, likeCallback, comentarioCallback } = this.props
 
     return (
       <View>
@@ -62,11 +42,11 @@ export default class Post extends Component {
         <Image source={{ uri: foto.urlFoto }}
           style={styles.foto}
         />
-        
+
         <View style={styles.rodape}>
           <Likes foto={foto} likeCallback={() => {
             likeCallback(foto.id)
-          }}/>
+          }} />
 
           {this.exibeLegenda(foto)}
 
@@ -80,7 +60,8 @@ export default class Post extends Component {
               </View>
             } />
 
-          <InputComentario comentarioCallback={this.adicionarComentario.bind(this)} />
+          <InputComentario idFoto={foto.id}
+            comentarioCallback={comentarioCallback} />
         </View>
       </View>
     )
