@@ -7,7 +7,7 @@ import {
   TextInput
 } from 'react-native'
 
-export default class inputComentario extends Component {
+export default class InputComentario extends Component {
 
   constructor() {
     super()
