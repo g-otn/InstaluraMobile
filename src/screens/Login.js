@@ -48,8 +48,10 @@ export default class Login extends Component {
         }
       })
       .then(token => {
-        AsyncStorage.setItem('token', token)
-        AsyncStorage.setItem('usuario', this.state.usuario)
+        AsyncStorage.multiSet([
+          ['usuario', this.state.usuario],
+          ['token', token]
+        ])
       })
       .catch(e => this.setState({ mensagem: e.message }))
   }
