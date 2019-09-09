@@ -7,10 +7,20 @@ import {
   TextInput,
   Button
 } from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage';
 
 const width = Dimensions.get('screen').width
 
 export default class Login extends Component {
+
+  constructor() {
+    super()
+    this.state = {
+      usuario: '',
+      senha: '',
+      mensagem: ''
+    }
+  }
 
   efetuarLogin() {
     const uri = 'https://instalura-api.herokuapp.com/api/public/login'
@@ -26,24 +36,28 @@ export default class Login extends Component {
       }
     }
 
-    console.log(requestInfo)
+    this.setState({ mensagem: '' })
 
     fetch(uri, requestInfo)
       .then(response => {
         if (response.ok) {
           return response.text()
         } else {
-          response.text().then(console.log)
-          throw new Error("Não foi possível efetuar Login")
+          throw new Error(`Não foi possível efetuar Login (${response.status})`)
         }
       })
-      .then(token => console.log(token))
+      .then(token => {
+        AsyncStorage.setItem('token', token)
+        AsyncStorage.setItem('usuario', this.state.usuario)
+      })
+      .catch(e => this.setState({ mensagem: e.message }))
   }
 
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.titulo}>Instalura</Text>
+
         <View style={styles.form}>
           <TextInput style={styles.input} placeholder="Usuário"
             onChangeText={texto => this.setState({ usuario: texto })}
@@ -55,6 +69,8 @@ export default class Login extends Component {
         </View>
 
         <Button title="Login" onPress={this.efetuarLogin.bind(this)} />
+
+        <Text style={styles.mensagem}>{this.state.mensagem}</Text>
 
       </View>
     )
@@ -80,5 +96,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
     fontSize: 18
+  },
+  mensagem: {
+    marginTop: 15,
+    color: '#e74c3c'
   }
 })
